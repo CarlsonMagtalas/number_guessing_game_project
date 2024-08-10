@@ -3,10 +3,27 @@ RANDOM_NUMBER=$((1 + $RANDOM % 1000))
 PSQL="psql -X -U freecodecamp -d number_guess -t -c"
 
 GAME_START(){
-  if [[ $1 ]]
-  then
-    echo $1
-  fi
+  COUNTER_NUM=0
+  CORRECT='FALSE'
+  echo "Guess the secret number between 1 and 1000:"
+  while [ $CORRECT = 'FALSE' ]
+  do
+    read GUESS
+    if [[ $GUESS -gt $RANDOM_NUMBER ]]
+    then
+      echo "It's lower than that, guess again:"
+      COUNTER_NUM=$((COUNTER_NUM + 1))
+
+    elif [[ $GUESS -lt $RANDOM_NUMBER ]]
+    then
+      echo "It's higher than that, guess again:"
+      COUNTER_NUM=$((COUNTER_NUM + 1))
+
+    elif [[ $GUESS -eq $RANDOM_NUMBER ]]
+    then
+      echo "A match noice! With $COUNTER_NUM tries."
+    fi
+  done
 }
 
 MAIN_MENU(){
@@ -19,13 +36,14 @@ MAIN_MENU(){
     if [[ -z $USER_EXISTS ]]
     then
       INSERT_USER=$($PSQL "INSERT INTO users(username, games_played, best_game) VALUES('$USERNAME', 0, 0)")
-      GAME_START "Welcome, $USERNAME! It looks like this is your first time here."
+      echo "Welcome, $USERNAME! It looks like this is your first time here."
     else
       echo "$USER_EXISTS" | while read GAMES BAR BEST BAR
       do
-        GAME_START "Welcom back, $USERNAME! You have played $GAMES games, and your best game took $BEST guesses."
+        echo "Welcome back, $USERNAME! You have played $GAMES games, and your best game took $BEST guesses."
       done
     fi
+    GAME_START
   fi
 }
 
