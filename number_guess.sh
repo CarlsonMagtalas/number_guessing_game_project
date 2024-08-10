@@ -25,6 +25,7 @@ GAME_START(){
 
     elif [[ $GUESS -eq $RANDOM_NUMBER ]]
     then
+      NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
       echo "You guessed it in $NUMBER_OF_GUESSES tries. The secret number was $RANDOM_NUMBER. Nice job!"
       INSERT_GAME_DATA=$($PSQL "UPDATE users set games_played = games_played + 1, best_game = CASE WHEN best_game > $NUMBER_OF_GUESSES THEN $NUMBER_OF_GUESSES ELSE best_game END
       WHERE username = '$USERNAME'")
